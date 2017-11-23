@@ -9,15 +9,14 @@ import urllib, urllib2
 import datetime
 import re
 import cookielib
-import sys
 import ConfigParser
 
 def getHiddenvalue(url):
     request=urllib2.Request(url)
     reponse=urllib2.urlopen(request)
     resu=reponse.read()
-    VIEWSTATE =re.findall(r‘<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />‘, resu,re.I)
-    EVENTVALIDATION =re.findall(r‘input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />‘, resu,re.I)
+    VIEWSTATE =re.findall(r'<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />', resu,re.I)
+    EVENTVALIDATION =re.findall(r'input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />', resu,re.I)
     return VIEWSTATE[0],EVENTVALIDATION[0]
 
 def getAndWrite():
