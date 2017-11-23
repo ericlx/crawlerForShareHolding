@@ -8,23 +8,24 @@
 import urllib, urllib2
 import datetime
 import re
-import cookielib
-import ConfigParser
+import cookielib
 
-def getHiddenvalue(url):
-    request=urllib2.Request(url)
-    reponse=urllib2.urlopen(request)
-    resu=reponse.read()
-    VIEWSTATE =re.findall(r'<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />', resu,re.I)
-    EVENTVALIDATION =re.findall(r'input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />', resu,re.I)
-    return VIEWSTATE[0],EVENTVALIDATION[0]
+
+def getHiddenValue(url):
+    request = urllib2.Request(url)
+    reponse = urllib2.urlopen(request)
+    resu = reponse.read().replace(' ', '')
+    lst = re.findall(r'value="(.*?)"', resu, re.S)
+    return lst[0], lst[2]
+
 
 def getAndWrite():
-    cookie = cookielib.CookieJar()  
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-    
-    a, b = getHiddenvalue('http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk')
+    cookie = cookielib.CookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 
+    VIEWSTATE, EVENTVALIDATION = getHiddenValue('http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk')
+    print VIEWSTATE
+    print EVENTVALIDATION
     today = datetime.date.today()
     year = today.year
     month = today.month
@@ -42,20 +43,20 @@ def getAndWrite():
     myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED', 'MELCOINTERNATIONALDEVELOPMENTLIMITED', 'SJMHOLDINGSLIMITED',
                'WYNNMACAU,LIMITED', 'SANDSCHINALTD.', 'MGMCHINAHOLDINGSLIMITED']
     postdata = {
-        '__viewstate': a,
+        '__viewstate': VIEWSTATE,
         '__VIEWSTATEGENERATOR': '3C67932C',
-        '__eventvalidation': b,
+        '__eventvalidation': EVENTVALIDATION,
         'today': Today,
         'sortBy': '',
         'alertMsg': '',
-        'ddlShareholdingDay': '17',
-        'ddlShareholdingMonth': '03',
+        'ddlShareholdingDay': '%s' % (day1),
+        'ddlShareholdingMonth': '%s' % (month1),
         'ddlShareholdingYear': '%s' % (year1),
-        'btnSearch.x': '%s' % (month1),
-        'btnSearch.y': '%s' % (day1)
+        'btnSearch.x': '1',
+        'btnSearch.y': '1'
     }
 
-    req = urllib2.Request(url = 'http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk', data = 'postdata')
+    req = urllib2.Request(url='http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk', data='postdata')
     html = opener.open(req).read()
     html = html.replace(' ', '')
     reg1 = r'<tdvalign="top"class="arial12black">\r\n(.*?)\r\n</td>'
@@ -67,7 +68,10 @@ def getAndWrite():
     myDict1 = dict(zip(names, values))
     myDict2 = dict(zip(myList2, myList1))
 
-    with open('%s.csv' % Today, 'w') as f:
+    with open('%s.csv' % myInput, 'w') as f:
         for item in myList2:
             myString = myDict2[item] + ',' + myDict1[item][0].replace(',', '') + ',' + myDict1[item][1] + ',\n'
             f.write(myString)
+
+
+getAndWrite()
