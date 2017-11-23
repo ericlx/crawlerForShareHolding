@@ -34,8 +34,8 @@ def getAndWrite():
     myInput = raw_input('Enter the date in yyyymmdd format: ')
 
     year1 = myInput[0:4]
-    month1 = [4:6]
-    day1 = [6:]
+    month1 = myInput[4:6]
+    day1 = myInput[6:]
 
     myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMENT LIMITED', 'SJM HOLDINGS LIMITED',
                'WYNN MACAU LIMITED', 'SANDS CHINA LTD.', 'MGM CHINA HOLDINGS LIMITED']
