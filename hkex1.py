@@ -10,11 +10,9 @@ import datetime
 import re
 
 today = datetime.date.today()
-
 year = today.year
 month = today.month
 day = today.day
-
 Today = '%s%s%s' % (year, month, day)
 
 headers = {
@@ -22,9 +20,6 @@ headers = {
     'Referer': 'http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
 }
 
-url = 'http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
-req = urllib2.Request(url)
-req.headers = headers
 data = {
     '__VIEWSTATEGENERATOR': '3C67932C',
     'today': 20171122,
@@ -37,29 +32,25 @@ data = {
     'btnSearch.y': '%s' % (day)
 }
 
-myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMENT LIMITED', 'SJM HOLDINGS LIMITED',
-           'WYNN MACAU LIMITED', 'SANDS CHINA LTD.', 'MGM CHINA HOLDINGS LIMITED']
-
-myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED', 'MELCOINTERNATIONALDEVELOPMENTLIMITED', 'SJMHOLDINGSLIMITED',
-           'WYNNMACAU,LIMITED', 'SANDSCHINALTD.', 'MGMCHINAHOLDINGSLIMITED']
-
+url = 'http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
+req = urllib2.Request(url)
+req.headers = headers
 urllib.urlencode(data)
-
 html = urllib2.urlopen(req, data='data').read()
-
 html = html.replace(' ', '')
-
-
 reg1 = r'<tdvalign="top"class="arial12black">\r\n(.*?)\r\n</td>'
 reg2 = r'<tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">\r\n(.*?)\r\n</td>\r\n<tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">\r\n(.*?)\r\n<'
 reg1 = re.compile(reg1, re.S)
 reg2 = re.compile(reg2, re.S)
 names = re.findall(reg1, html)
 values = re.findall(reg2, html)
-
 myDict1 = dict(zip(names, values))
 myDict2 = dict(zip(myList2, myList1))
 
+myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMENT LIMITED', 'SJM HOLDINGS LIMITED',
+           'WYNN MACAU LIMITED', 'SANDS CHINA LTD.', 'MGM CHINA HOLDINGS LIMITED']
+myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED', 'MELCOINTERNATIONALDEVELOPMENTLIMITED', 'SJMHOLDINGSLIMITED',
+           'WYNNMACAU,LIMITED', 'SANDSCHINALTD.', 'MGMCHINAHOLDINGSLIMITED']
 
 with open('%s.csv' % Today, 'w') as f:
     for item in myList2:
