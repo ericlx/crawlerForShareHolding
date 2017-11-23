@@ -32,9 +32,9 @@ data = {
     'alertMsg': '',
     'ddlShareholdingDay': '17',
     'ddlShareholdingMonth': '03',
-    'ddlShareholdingYear': '2017',
-    'btnSearch.x': '26',
-    'btnSearch.y': '12'
+    'ddlShareholdingYear': '%s' % (year),
+    'btnSearch.x': '%s' % (month),
+    'btnSearch.y': '%s' % (day)
 }
 
 myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMENT LIMITED', 'SJM HOLDINGS LIMITED',
