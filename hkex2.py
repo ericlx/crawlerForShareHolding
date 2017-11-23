@@ -20,6 +20,9 @@ def getHiddenvalue(url):
     return VIEWSTATE[0],EVENTVALIDATION[0]
 
 def getAndWrite():
+    cookie = cookielib.CookieJar()  
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    
     a, b = getHiddenvalue('http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk')
 
     today = datetime.date.today()
