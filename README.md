@@ -1,1 +1,3 @@
 # crawlerForShareHolding
+一个爬取6家所需公司的当日ShareHolding, 并储存于yyyymmdd.csv中的爬虫
+第二版中将加入时间选取
