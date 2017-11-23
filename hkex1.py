@@ -27,14 +27,14 @@ headers = {
 
 data = {
     '__VIEWSTATEGENERATOR': '3C67932C',
-    'today': 20171122,
+    'today': Today,
     'sortBy': '',
     'alertMsg': '',
-    'ddlShareholdingDay': '17',
-    'ddlShareholdingMonth': '03',
+    'ddlShareholdingDay': '%s' % (day),
+    'ddlShareholdingMonth': '%s' % (month),
     'ddlShareholdingYear': '%s' % (year),
-    'btnSearch.x': '%s' % (month),
-    'btnSearch.y': '%s' % (day)
+    'btnSearch.x': '1',
+    'btnSearch.y': '2'
 }
 
 url = 'http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
