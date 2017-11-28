@@ -1,77 +1,72 @@
+# !/user/bin/env python
 # -*- coding: utf-8 -*-
-# Title: crawlerForShareHolding
-# Author: EricLX
-# Operating Environment: Python 2.X
-# Version: 1.0.0
-# Date: 22 November, 2017
+# Project: hkex2 - crawler for shareholding
+# Version: 1.1
+# Date: 28/11/2017
+__author__ = 'EricLX'
 
-import urllib, urllib2
-import datetime
+from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 import re
-import cookielib
+import datetime
 
+# Please modify the date first, in yyyymmdd format!
+date = '20170317'
 
-def getHiddenValue(url):
-    request = urllib2.Request(url)
-    reponse = urllib2.urlopen(request)
-    resu = reponse.read().replace(' ', '')
-    lst = re.findall(r'value="(.*?)"', resu, re.S)
-    return lst[0], lst[2]
+# You may also update the companies required
+# myList1 is the original company names with ',' in the name deleted, all other punctuations remain
+# myList2 is the corresponding company names with spaces deleted, all other punctuations remain
+myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMENT LIMITED', 'SJM HOLDINGS LIMITED',
+           'WYNN MACAU LIMITED', 'SANDS CHINA LTD.', 'MGM CHINA HOLDINGS LIMITED']
+myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED', 'MELCOINTERNATIONALDEVELOPMENTLIMITED', 'SJMHOLDINGSLIMITED',
+           'WYNNMACAU,LIMITED', 'SANDSCHINALTD.', 'MGMCHINAHOLDINGSLIMITED']
 
+def getPage(date):
+    url = 'http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
+    driver = webdriver.Chrome()
+    driver.get(url)
+    driver.set_page_load_timeout(30)
 
-def getAndWrite():
-    cookie = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    myDict = {'ddlShareholdingDay': date[6:],
+              'ddlShareholdingMonth': date[4:6],
+              'ddlShareholdingYear': date[:4]
+              }
 
-    VIEWSTATE, EVENTVALIDATION = getHiddenValue('http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk')
-    print VIEWSTATE
-    print EVENTVALIDATION
+    for key in myDict:
+        selectDay = Select(driver.find_element_by_name(key))
+        selectDay.select_by_visible_text(myDict[key])
+
+    forSearch = driver.find_element_by_name("btnSearch")
+    forSearch.click()
+    result = driver.page_source
+    driver.quit()
+    return result
+
+def getDateOfToday():
     today = datetime.date.today()
     year = today.year
     month = today.month
     day = today.day
     Today = '%s%s%s' % (year, month, day)
+    return Today
 
-    myInput = raw_input('Enter the date in yyyymmdd format: ')
-
-    year1 = myInput[0:4]
-    month1 = myInput[4:6]
-    day1 = myInput[6:]
-
-    myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMENT LIMITED', 'SJM HOLDINGS LIMITED',
-               'WYNN MACAU LIMITED', 'SANDS CHINA LTD.', 'MGM CHINA HOLDINGS LIMITED']
-    myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED', 'MELCOINTERNATIONALDEVELOPMENTLIMITED', 'SJMHOLDINGSLIMITED',
-               'WYNNMACAU,LIMITED', 'SANDSCHINALTD.', 'MGMCHINAHOLDINGSLIMITED']
-    postdata = {
-        '__viewstate': VIEWSTATE,
-        '__VIEWSTATEGENERATOR': '3C67932C',
-        '__eventvalidation': EVENTVALIDATION,
-        'today': Today,
-        'sortBy': '',
-        'alertMsg': '',
-        'ddlShareholdingDay': '%s' % (day1),
-        'ddlShareholdingMonth': '%s' % (month1),
-        'ddlShareholdingYear': '%s' % (year1),
-        'btnSearch.x': '1',
-        'btnSearch.y': '1'
-    }
-
-    req = urllib2.Request(url='http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk', data='postdata')
-    html = opener.open(req).read()
-    html = html.replace(' ', '')
-    reg1 = r'<tdvalign="top"class="arial12black">\r\n(.*?)\r\n</td>'
-    reg2 = r'<tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">\r\n(.*?)\r\n</td>\r\n<tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">\r\n(.*?)\r\n<'
-    reg1 = re.compile(reg1, re.S)
-    reg2 = re.compile(reg2, re.S)
-    names = re.findall(reg1, html)
-    values = re.findall(reg2, html)
+if int(date) >= int(getDateOfToday()):
+    print "Invalid date input!"
+    print "If you are trying to get the data for today, please run hkex1.py"
+else:
+    page = getPage(date)
+    page = getPage(date).encode('utf-8')
+    page = page.replace(' ', '')
+    page = page.replace('\n', '')
+    page = page.replace('\r', '')
+    reg1 = r'<tdvalign="top"class="arial12black">(.*?)</td>'
+    reg2 = r'<tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">(.*?)</td><tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">(.*?)</td>'
+    names = re.findall(reg1, page)
+    values = re.findall(reg2, page)
     myDict1 = dict(zip(names, values))
     myDict2 = dict(zip(myList2, myList1))
 
-    with open('%s.csv' % myInput, 'w') as f:
-        for item in myList2:
-            myString = myDict2[item] + ',' + myDict1[item][0].replace(',', '') + ',' + myDict1[item][1] + ',\n'
+    with open('%s.csv' % date, 'w') as f:
+        for key in myList2:
+            myString = myDict2[key] + ',' + myDict1[key][0].replace(',', '') + ',' + myDict1[key][1] + ',\n'
             f.write(myString)
-
-
-getAndWrite()
