@@ -31,7 +31,6 @@ def getPage(date):
               'ddlShareholdingMonth': date[4:6],
               'ddlShareholdingYear': date[:4]
               }
-
     for key in myDict:
         selectDay = Select(driver.find_element_by_name(key))
         selectDay.select_by_visible_text(myDict[key])
@@ -54,7 +53,6 @@ if int(date) >= int(getDateOfToday()):
     print "Invalid date input!"
     print "If you are trying to get the data for today, please run hkex1.py"
 else:
-    page = getPage(date)
     page = getPage(date).encode('utf-8')
     page = page.replace(' ', '')
     page = page.replace('\n', '')
