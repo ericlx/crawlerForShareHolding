@@ -1,7 +1,7 @@
 # !/user/bin/env python
 # -*- coding: utf-8 -*-
 # Project: hkex2 - crawler for shareholding
-# Version: 1.1
+# Version: 1.1.6
 # Date: 28/11/2017
 __author__ = 'EricLX'
 
@@ -11,7 +11,7 @@ import re
 import datetime
 
 # Please modify the date first, in yyyymmdd format!
-date = '20170317'
+date = raw_input('Enter the date you need, in yyyymmdd format: ')
 
 # You may also update the companies required
 # myList1 is the original company names with ',' in the name deleted, all other punctuations remain
@@ -20,6 +20,7 @@ myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMEN
            'WYNN MACAU LIMITED', 'SANDS CHINA LTD.', 'MGM CHINA HOLDINGS LIMITED']
 myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED', 'MELCOINTERNATIONALDEVELOPMENTLIMITED', 'SJMHOLDINGSLIMITED',
            'WYNNMACAU,LIMITED', 'SANDSCHINALTD.', 'MGMCHINAHOLDINGSLIMITED']
+
 
 def getPage(date):
     url = 'http://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
@@ -41,6 +42,7 @@ def getPage(date):
     driver.quit()
     return result
 
+
 def getDateOfToday():
     today = datetime.date.today()
     year = today.year
@@ -49,22 +51,26 @@ def getDateOfToday():
     Today = '%s%s%s' % (year, month, day)
     return Today
 
-if int(date) >= int(getDateOfToday()):
-    print "Invalid date input!"
-    print "If you are trying to get the data for today, please run hkex1.py"
-else:
-    page = getPage(date).encode('utf-8')
-    page = page.replace(' ', '')
-    page = page.replace('\n', '')
-    page = page.replace('\r', '')
-    reg1 = r'<tdvalign="top"class="arial12black">(.*?)</td>'
-    reg2 = r'<tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">(.*?)</td><tdvalign="top"nowrap="nowrap"class="arial12black"style="text-align:right;">(.*?)</td>'
-    names = re.findall(reg1, page)
-    values = re.findall(reg2, page)
-    myDict1 = dict(zip(names, values))
-    myDict2 = dict(zip(myList2, myList1))
 
-    with open('%s.csv' % date, 'w') as f:
-        for key in myList2:
-            myString = myDict2[key] + ',' + myDict1[key][0].replace(',', '') + ',' + myDict1[key][1] + ',\n'
-            f.write(myString)
+while len(date) < 8:
+    date = raw_input('Invalid date input! Please enter again: ')
+else:
+    if int(date) >= int(getDateOfToday()):
+        print "Invalid date input!"
+        print "If you are trying to get the data for today, please run hkex1.py"
+    else:
+        page = getPage(date).encode('utf-8')
+        page = page.replace(' ', '').replace('\n', '').replace('\r', '')
+        reg1 = r'<tdvalign="top"class="arial12black">(.*?)</td>'
+        reg2 = r'<.*?"text-align:right;">(.*?)</td><.*?"text-align:right;">(.*?)</td>'
+        names = re.findall(reg1, page)
+        values = re.findall(reg2, page)
+        myDict1 = dict(zip(names, values))
+        myDict2 = dict(zip(myList2, myList1))
+
+        with open('%s.csv' % date, 'w') as f:
+            for key in myList2:
+                myString = myDict2[key] + ',' + myDict1[key][0].replace(',', '') + ',' + myDict1[key][1] + ',\n'
+                f.write(myString)
+
+        print "Shareholding data have been saved in %s.csv successfully" % date
