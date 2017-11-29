@@ -10,16 +10,27 @@ from selenium.webdriver.support.ui import Select
 import re
 import datetime
 
-# Please modify the date first, in yyyymmdd format!
+# Note 1: Please modify the date first, in yyyymmdd format!
 date = raw_input('Enter the date you need, in yyyymmdd format: ')
 
-# You may also update the companies required
-# myList1 is the original company names with ',' in the name deleted, all other punctuations remain
-# myList2 is the corresponding company names with spaces deleted, all other punctuations remain
-myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED', 'MELCO INTERNATIONAL DEVELOPMENT LIMITED', 'SJM HOLDINGS LIMITED',
-           'WYNN MACAU LIMITED', 'SANDS CHINA LTD.', 'MGM CHINA HOLDINGS LIMITED']
-myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED', 'MELCOINTERNATIONALDEVELOPMENTLIMITED', 'SJMHOLDINGSLIMITED',
-           'WYNNMACAU,LIMITED', 'SANDSCHINALTD.', 'MGMCHINAHOLDINGSLIMITED']
+# Note 2: You may also update the companies required
+# Note 3: myList1 is the original company names with ',' in the name deleted,
+#         all other punctuations remain
+# Note 4: myList2 is the corresponding company names with spaces deleted,
+#         all other punctuations remain
+
+myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED',
+           'MELCO INTERNATIONAL DEVELOPMENT LIMITED',
+           'SJM HOLDINGS LIMITED',
+           'WYNN MACAU LIMITED', 'SANDS CHINA LTD.',
+           'MGM CHINA HOLDINGS LIMITED']
+
+myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED',
+           'MELCOINTERNATIONALDEVELOPMENTLIMITED',
+           'SJMHOLDINGSLIMITED',
+           'WYNNMACAU,LIMITED',
+           'SANDSCHINALTD.',
+           'MGMCHINAHOLDINGSLIMITED']
 
 
 def getPage(date):
@@ -58,6 +69,8 @@ else:
     if int(date) >= int(getDateOfToday()):
         print "Invalid date input!"
         print "If you are trying to get the data for today, please run hkex1.py"
+    elif int(date) < 20170317:
+        print "Invalid date input!"
     else:
         page = getPage(date).encode('utf-8')
         page = page.replace(' ', '').replace('\n', '').replace('\r', '')
@@ -70,7 +83,8 @@ else:
 
         with open('%s.csv' % date, 'w') as f:
             for key in myList2:
-                myString = myDict2[key] + ',' + myDict1[key][0].replace(',', '') + ',' + myDict1[key][1] + ',\n'
+                myString = myDict2[key] + ',' + myDict1[key][0].replace(',', '') +\
+                           ',' + myDict1[key][1] + ',\n'
                 f.write(myString)
 
         print "Shareholding data have been saved in %s.csv successfully" % date
