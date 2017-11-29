@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Project: hkex2 - crawler for shareholding
 # Version: 1.1.6
+# Environment: Python 2.x; chromedriver.exe
 # Date: 28/11/2017
 __author__ = 'EricLX'
 
@@ -10,14 +11,12 @@ from selenium.webdriver.support.ui import Select
 import re
 import datetime
 
-# Note 1: Please modify the date first, in yyyymmdd format!
+# Please ensure the format and validity of the date input!
 date = raw_input('Enter the date you need, in yyyymmdd format: ')
 
-# Note 2: You may also update the companies required
-# Note 3: myList1 is the original company names with ',' in the name deleted,
-#         all other punctuations remain
-# Note 4: myList2 is the corresponding company names with spaces deleted,
-#         all other punctuations remain
+# You may also update the companies required
+# myList1 is the original company names with ',' in the name deleted,
+# all other punctuations remain
 
 myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED',
            'MELCO INTERNATIONAL DEVELOPMENT LIMITED',
@@ -25,6 +24,8 @@ myList1 = ['GALAXY ENTERTAINMENT GROUP LIMITED',
            'WYNN MACAU LIMITED', 'SANDS CHINA LTD.',
            'MGM CHINA HOLDINGS LIMITED']
 
+# myList2 is the corresponding company names with spaces deleted,
+# all other punctuations remain
 myList2 = ['GALAXYENTERTAINMENTGROUPLIMITED',
            'MELCOINTERNATIONALDEVELOPMENTLIMITED',
            'SJMHOLDINGSLIMITED',
