@@ -45,8 +45,8 @@ def getPage(date):
               'ddlShareholdingYear': date[:4]
               }
     for key in myDict:
-        selectDay = Select(driver.find_element_by_name(key))
-        selectDay.select_by_visible_text(myDict[key])
+        selectDate = Select(driver.find_element_by_name(key))
+        selectDate.select_by_visible_text(myDict[key])
 
     forSearch = driver.find_element_by_name("btnSearch")
     forSearch.click()
@@ -60,7 +60,7 @@ def getDateOfToday():
     year = today.year
     month = today.month
     day = today.day
-    Today = '%s%s%s' % (year, month, day)
+    Today = '%s%02d%02d' % (year, month, day)
     return Today
 
 
