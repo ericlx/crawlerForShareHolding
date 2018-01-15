@@ -1,7 +1,7 @@
 # !/user/bin/env python
 # -*- coding: utf-8 -*-
 # Project: hkex2 - crawler for shareholding
-# Version: 1.1.6
+# Version: 2.1.6
 # Environment: Python 2.x; chromedriver.exe
 # Date: 28/11/2017
 __author__ = 'EricLX'
