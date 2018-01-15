@@ -1,7 +1,7 @@
 # !/user/bin/env python
 # -*- coding: utf-8 -*-
 # Project: hkex3 - crawler for shareholding
-# Version: 1.1.6
+# Version: 3.0.1
 # Environment: Python 3.x; chromedriver.exe
 # Date: 15/01/2018
 # You may get the original codes from: 
