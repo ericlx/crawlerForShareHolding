@@ -93,5 +93,5 @@ else:
                            ',' + myDict1[key][1] + ',\n'
                 f.write(myString)
                 
-        # pop up the successful notice
+        # prompt the successful notice
         print("Shareholding data have been saved in %s.csv successfully" % date)
