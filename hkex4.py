@@ -5,7 +5,7 @@
 # Environment: Python 3.x; chromedriver.exe
 # Date: 15/01/2018
 # You may get the original codes from:
-# https://github.com/ericlx/crawlerForShareHolding/blob/master/hkex3.py
+# https://github.com/ericlx/crawlerForShareHolding/blob/master/hkex4.py
 __author__ = 'EricLX'
 
 from selenium import webdriver
