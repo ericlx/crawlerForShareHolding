@@ -10,4 +10,6 @@ hkex3 是基于hkex2的修改版本，适用于Python3
 
 hkex4 是基于hkex3的修改版本，允许用户重复输入需要的日期，并将sharehonlding的信息统一储存于shareholding.csv文件中
 
+hkex5 基于hkex4，允许用户输入起始和终止日期，获得期间所有shareholding和percentage数据
+
 中文水平为负=.=
