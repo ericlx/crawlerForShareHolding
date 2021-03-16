@@ -12,7 +12,7 @@ import requests
 from lxml import etree
 from time import sleep
 
-def getEveryDay(begin_date, end_date):
+def get_every_day(begin_date, end_date):
     dateList = []
     beginDate = datetime.datetime.strptime(begin_date, '%Y%m%d')
     endDate = datetime.datetime.strptime(end_date, '%Y%m%d')
@@ -22,11 +22,11 @@ def getEveryDay(begin_date, end_date):
         beginDate += datetime.timedelta(days=1)
     return dateList
 
-def obtainDate():
+def obtain_date():
     # Please ensure the format and validity of the date input!
     startingDate = input('Enter the starting date (yyyymmdd format): ')
     endingDate = input('Enter the ending date (yyyymmdd format): ')
-    return startingDate, endingDate, getEveryDay(startingDate, endingDate)
+    return startingDate, endingDate, get_every_day(startingDate, endingDate)
 
 def get_form_data(url, headers, search_date):
     response = requests.get(url, headers = headers)
@@ -93,7 +93,7 @@ reg = f'''\
 {repl1}</tr>\
 '''
 f = xlwt.Workbook(encoding='utf-8', style_compression=0)
-start, end, datelist = obtainDate()
+start, end, datelist = obtain_date()
 
 for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
