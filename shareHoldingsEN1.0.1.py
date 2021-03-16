@@ -1,3 +1,8 @@
+# Project Name: ShareholdingEN
+# Version: 1.0.1
+# Updated: Eric
+# Date: 16 March, 2021
+
 import re
 import sys
 import xlrd
@@ -63,25 +68,29 @@ headers = {
     'user-agent': header_content
 }
 
-reg = '''\
+repl1 = '                                        '
+repl2 = '                                            '
+repl3 = '                                                '
+
+reg = f'''\
 <tr>\
-                                            <td class="col-stock-code">\
-                                                <div class="mobile-list-heading">(.*?)</div>\
-                                                <div class="mobile-list-body">(.*?)</div>\
-                                            </td>\
-                                            <td class="col-stock-name">\
-                                                <div class="mobile-list-heading">(.*?)</div>\
-                                                <div class="mobile-list-body">(.*?)</div>\
-                                            </td>\
-                                            <td class="col-shareholding">\
-                                                <div class="mobile-list-heading">(.*?)</div>\
-                                                <div class="mobile-list-body">(.*?)</div>\
-                                            </td>\
-                                            <td class="col-shareholding-percent">\
-                                                <div class="mobile-list-heading">(.*?)</div>\
-                                                <div class="mobile-list-body">(.*?)</div>\
-                                            </td>\
-                                        </tr>\
+{repl2}<td class="col-stock-code">\
+{repl3}<div class="mobile-list-heading">(.*?)</div>\
+{repl3}<div class="mobile-list-body">(.*?)</div>\
+{repl2}</td>\
+{repl2}<td class="col-stock-name">\
+{repl3}<div class="mobile-list-heading">(.*?)</div>\
+{repl3}<div class="mobile-list-body">(.*?)</div>\
+{repl2}</td>\
+{repl2}<td class="col-shareholding">\
+{repl3}<div class="mobile-list-heading">(.*?)</div>\
+{repl3}<div class="mobile-list-body">(.*?)</div>\
+{repl2}</td>\
+{repl2}<td class="col-shareholding-percent">\
+{repl3}<div class="mobile-list-heading">(.*?)</div>\
+{repl3}<div class="mobile-list-body">(.*?)</div>\
+{repl2}</td>\
+{repl1}</tr>\
 '''
 f = xlwt.Workbook(encoding='utf-8', style_compression=0)
 start, end, datelist = obtainDate()
