@@ -1,3 +1,8 @@
+# Project Name: ShareholdingCN
+# Version: 1.0.1
+# Updated: Eric
+# Date: 16 March, 2021
+
 import re
 import sys
 import xlrd
