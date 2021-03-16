@@ -103,7 +103,7 @@ for date in datelist:
     for index, item in enumerate(results):
         for i in range(1, 8, 2):
             cell = item[i].replace(',','').replace('%','')
-            sheet.write(index + 1, i // 2, cell)
+            sheet.write(index + 1, i // 2, cell.strip())
 
     sleep(3)
 
