@@ -97,21 +97,27 @@ start, end, datelist = obtain_date()
 
 for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
-    content = get_content(url, get_form_data(url, headers, search_date))
-    page = content.replace('\n', '').replace('\r', '')
 
-    results = re.findall(reg, page)
+    try:
+        content = get_content(url, get_form_data(url, headers, search_date))
+        page = content.replace('\n', '').replace('\r', '')
+        results = re.findall(reg, page)
 
-    sheet = f.add_sheet(search_date.replace('/',''))
+        sheet = f.add_sheet(search_date.replace('/',''))
 
-    for i in range(0, 8, 2):
-        sheet.write(0, i // 2, results[0][i])
+        for i in range(0, 8, 2):
+            sheet.write(0, i // 2, results[0][i])
 
-    for index, item in enumerate(results):
-        for i in range(1, 8, 2):
-            cell = item[i].replace(',','').replace('%','')
-            sheet.write(index + 1, i // 2, cell.strip())
-
+        for index, item in enumerate(results):
+            for i in range(1, 8, 2):
+                cell = item[i].replace(',','').replace('%','')
+                sheet.write(index + 1, i // 2, cell.strip())
+                
+        print('{} Done!'.format(search_date))
+        
+    except:
+        print('Error: {} is not available!'.format(search_date))
+    
     sleep(3)
 
 date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
