@@ -35,7 +35,6 @@ def get_form_data(url, headers, search_date):
     GENERATOR = sel.xpath('//input[@name="__VIEWSTATEGENERATOR"]/@value')
     EVENT = sel.xpath('//input[@name="__EVENTVALIDATION"]/@value')
     today = sel.xpath('//input[@name="today"]/@value')
-
     form_data = {
         '__VIEWSTATE' : VIEW,
         '__VIEWSTATEGENERATOR' : GENERATOR,
@@ -47,7 +46,6 @@ def get_form_data(url, headers, search_date):
         'txtShareholdingDate': search_date,
         'btnSearch': 'Search'
     }
-
     return(form_data)
 
 def get_content(url, form_data):
@@ -63,15 +61,11 @@ apple = 'AppleWebKit/537.36 (KHTML, like Gecko) '
 chrome = 'Chrome/89.0.4389.82 '
 safari = 'Safari/537.36'
 header_content = mozilla + apple + chrome + safari
-
 headers = {
     'user-agent': header_content
 }
 
-repl1 = '                                        '
-repl2 = '                                            '
-repl3 = '                                                '
-
+repl1, repl2, repl3 = ' ' * 40, ' ' * 44, ' ' * 48
 reg = f'''\
 <tr>\
 {repl2}<td class="col-stock-code">\
@@ -92,32 +86,22 @@ reg = f'''\
 {repl2}</td>\
 {repl1}</tr>\
 '''
+
 f = xlwt.Workbook(encoding='utf-8', style_compression=0)
 start, end, datelist = obtain_date()
 
 for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
-
-    try:
-        content = get_content(url, get_form_data(url, headers, search_date))
-        page = content.replace('\n', '').replace('\r', '')
-        results = re.findall(reg, page)
-
-        sheet = f.add_sheet(search_date.replace('/',''))
-
-        for i in range(0, 8, 2):
-            sheet.write(0, i // 2, results[0][i])
-
-        for index, item in enumerate(results):
-            for i in range(1, 8, 2):
-                cell = item[i].replace(',','').replace('%','')
-                sheet.write(index + 1, i // 2, cell.strip())
-                
-        print('{} Done!'.format(search_date))
-        
-    except:
-        print('Error: {} is not available!'.format(search_date))
-    
+    content = get_content(url, get_form_data(url, headers, search_date))
+    page = content.replace('\n', '').replace('\r', '')
+    results = re.findall(reg, page)
+    sheet = f.add_sheet(search_date.replace('/',''))
+    for i in range(0, 8, 2):
+        sheet.write(0, i // 2, results[0][i])
+    for index, item in enumerate(results):
+        for i in range(1, 8, 2):
+            cell = item[i].replace(',','').replace('%','')
+            sheet.write(index + 1, i // 2, cell)
     sleep(3)
 
 date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
