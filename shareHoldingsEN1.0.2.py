@@ -1,17 +1,28 @@
 # Project Name: ShareholdingEN
-# Version: 1.0.1
+# Version: 1.0.2
 # Updated: Eric
-# Date: 16 March, 2021
+# Date: 17 March, 2021
 
+# Standard library for Python
 import re
 import sys
-import xlrd
-import xlwt
 import datetime
-import requests
-from lxml import etree
 from time import sleep
 
+# Library need to be installed
+import xlrd
+import xlwt
+import requests
+from lxml import etree
+
+# To obtain start and ending date from user input
+def obtain_date():
+    # Please ensure the format and validity of the date input!
+    startingDate = input('Enter the starting date (YYYYMMDD format): ')
+    endingDate = input('Enter the ending date (YYYYMMDD format): ')
+    return startingDate, endingDate, get_every_day(startingDate, endingDate)
+
+# To construct a list including every date from start to the end
 def get_every_day(begin_date, end_date):
     dateList = []
     beginDate = datetime.datetime.strptime(begin_date, '%Y%m%d')
@@ -22,13 +33,9 @@ def get_every_day(begin_date, end_date):
         beginDate += datetime.timedelta(days=1)
     return dateList
 
-def obtain_date():
-    # Please ensure the format and validity of the date input!
-    startingDate = input('Enter the starting date (yyyymmdd format): ')
-    endingDate = input('Enter the ending date (yyyymmdd format): ')
-    return startingDate, endingDate, get_every_day(startingDate, endingDate)
-
+# To get the formdata required for post requests
 def get_form_data(url, headers, search_date):
+
     response = requests.get(url, headers = headers)
     sel = etree.HTML(response.content)
     VIEW = sel.xpath('//input[@name="__VIEWSTATE"]/@value')
@@ -48,22 +55,35 @@ def get_form_data(url, headers, search_date):
     }
     return(form_data)
 
+# To get the content of the website using post requests
 def get_content(url, form_data):
     response = requests.post(url, data = form_data, headers = headers)
     contents = response.content
     contents_encode = str(contents, encoding = "utf8")
     return(contents_encode)
 
-url = 'https://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
+# To define the headers
+def get_headers():
+    mozilla = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+    apple = 'AppleWebKit/537.36 (KHTML, like Gecko) '
+    chrome = 'Chrome/89.0.4389.82 '
+    safari = 'Safari/537.36'
+    header_content = mozilla + apple + chrome + safari
+    headers = {
+        'user-agent': header_content
+    }
 
-mozilla = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-apple = 'AppleWebKit/537.36 (KHTML, like Gecko) '
-chrome = 'Chrome/89.0.4389.82 '
-safari = 'Safari/537.36'
-header_content = mozilla + apple + chrome + safari
-headers = {
-    'user-agent': header_content
-}
+sp = int(input('Enter 0 for shares, enter 1 for percentage: '))
+selection = 5
+if sp == 1: selection = 7
+request_list = ['Share', 'Percentage']
+start, end, datelist = obtain_date()
+number_of_days = 0
+title = ['Stock code', 'Stock Name']
+output = {}
+
+url = 'https://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
+headers = get_headers()
 
 repl1, repl2, repl3 = ' ' * 40, ' ' * 44, ' ' * 48
 reg = f'''\
@@ -86,15 +106,6 @@ reg = f'''\
 {repl2}</td>\
 {repl1}</tr>\
 '''
-
-sp = int(input('Enter 0 for shares, enter 1 for percentage: '))
-selection = 5
-if sp == 1: selection = 7
-request_list = ['Share', 'Percentage']
-start, end, datelist = obtain_date()
-number_of_days = 0
-title = ['Stock code', 'Stock Name']
-output = {}
 
 for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
