@@ -35,7 +35,6 @@ def get_form_data(url, headers, search_date):
     GENERATOR = sel.xpath('//input[@name="__VIEWSTATEGENERATOR"]/@value')
     EVENT = sel.xpath('//input[@name="__EVENTVALIDATION"]/@value')
     today = sel.xpath('//input[@name="today"]/@value')
-
     form_data = {
         '__VIEWSTATE' : VIEW,
         '__VIEWSTATEGENERATOR' : GENERATOR,
@@ -47,7 +46,6 @@ def get_form_data(url, headers, search_date):
         'txtShareholdingDate': search_date,
         'btnSearch': 'Search'
     }
-
     return(form_data)
 
 def get_content(url, form_data):
@@ -63,15 +61,11 @@ apple = 'AppleWebKit/537.36 (KHTML, like Gecko) '
 chrome = 'Chrome/89.0.4389.82 '
 safari = 'Safari/537.36'
 header_content = mozilla + apple + chrome + safari
-
 headers = {
     'user-agent': header_content
 }
 
-repl1 = '                                        '
-repl2 = '                                            '
-repl3 = '                                                '
-
+repl1, repl2, repl3 = ' ' * 40, ' ' * 44, ' ' * 48
 reg = f'''\
 <tr>\
 {repl2}<td class="col-stock-code">\
@@ -95,8 +89,7 @@ reg = f'''\
 
 sp = int(input('Enter 0 for shares, enter 1 for percentage: '))
 selection = 5
-if sp == 1:
-    selection = 7
+if sp == 1: selection = 7
 request_list = ['Share', 'Percentage']
 start, end, datelist = obtain_date()
 number_of_days = 0
@@ -105,13 +98,11 @@ output = {}
 
 for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
-    
     try:
         title.append(search_date)
         content = get_content(url, get_form_data(url, headers, search_date))
         page = content.replace('\n', '').replace('\r', '')
         results = re.findall(reg, page)
-
         for item in results:
             if output.get(int(item[1])):
                 output[int(item[1])].append(item[selection])
@@ -121,7 +112,6 @@ for date in datelist:
                 for i in range(0, number_of_days):
                     output[int(item[1])].append('N/A')
                 output[int(item[1])].append(item[selection])
-                
         print('{} Done!'.format(search_date))
         number_of_days += 1
     except:
@@ -133,15 +123,12 @@ sheet = f.add_sheet('Shareholdings_{}'.format(request_list[sp]))
 
 for index, cell in enumerate(title):
     sheet.write(0, index, cell)
-
 to_excel = []
-
 for key, value in output.items():
     temp = []
     temp.append(key)
     temp.extend(value)
     to_excel.append(temp)
-
 for i, j in enumerate(to_excel):
     for m, n in enumerate(j):
         sheet.write(i + 1, m, n)
