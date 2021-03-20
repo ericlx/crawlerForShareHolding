@@ -79,7 +79,7 @@ def get_headers():
     }
 
 # Main program
-if __name__ == '__main__':
+def main():
     # To obtain user input and define the data required
     sp = int(input('Enter 0 for shares, enter 1 for percentage: '))
     selection = 5
@@ -176,3 +176,7 @@ if __name__ == '__main__':
 
     # To exit the program
     exiting = input('Completed! Press [Enter] to exit.')
+
+# To run the main program
+if __name__ == '__main__':
+    main()
