@@ -18,11 +18,11 @@ from lxml import etree
 # To obtain start and ending date from user input
 def obtain_date():
     # Please ensure the format and validity of the date input!
-    startingDate = input('Enter the starting date (YYYYMMDD format): ')
+    startingDate = input('Enter the start date (YYYYMMDD format): ')
     endingDate = input('Enter the ending date (YYYYMMDD format): ')
     return startingDate, endingDate, get_every_day(startingDate, endingDate)
 
-# To construct a list including every date from start to the end
+# To construct a list including every date from the start to the end
 def get_every_day(begin_date, end_date):
     dateList = []
     beginDate = datetime.datetime.strptime(begin_date, '%Y%m%d')
@@ -38,7 +38,6 @@ def re_extract(reg, html):
     page = html.replace('\n', '').replace('\r', '')
     results = re.findall(reg, page)
     return results
-
 
 # To get the formdata required for post requests
 def get_form_data(url, headers, search_date):
