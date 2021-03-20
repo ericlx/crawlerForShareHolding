@@ -35,7 +35,6 @@ def get_every_day(begin_date, end_date):
 
 # To get the formdata required for post requests
 def get_form_data(url, headers, search_date):
-
     response = requests.get(url, headers = headers)
     sel = etree.HTML(response.content)
     VIEW = sel.xpath('//input[@name="__VIEWSTATE"]/@value')
