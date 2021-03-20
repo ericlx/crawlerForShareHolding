@@ -81,21 +81,21 @@ def get_headers():
 
 # Main program
 if __name__ == '__main__':
+    # To obtain user input and define the data required
     sp = int(input('Enter 0 for shares, enter 1 for percentage: '))
     selection = 5
     if sp == 1:
         selection = 7
 
+    # To obtain user input and define the time period
     start, end, datelist = obtain_date()
     number_of_days = 0
-    output = {}
 
-    request_list = ['Share', 'Percentage']
-    title = ['Stock code', 'Stock Name']
-
+    # To define the url to visit and get the headers
     url = 'https://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
     headers = get_headers()
 
+    # To set up regular expression
     repl1, repl2, repl3 = ' ' * 40, ' ' * 44, ' ' * 48
     reg = f'''\
     <tr>\
@@ -118,13 +118,28 @@ if __name__ == '__main__':
     {repl1}</tr>\
     '''
 
+    # To define the default table title and table name
+    title = ['Stock code', 'Stock Name']
+    request_list = ['Share', 'Percentage']
+
+    # To obtain the data by date, and store in a dictionary named output
+    output = {}
     for date in datelist:
         search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
+        # To pause the program for three seconds
         sleep(3)
+
+        # To skip invalid date
         try:
             title.append(search_date)
+
+            # The content should be a html file from the website
             content = get_content(url, get_form_data(url, headers, search_date))
+
+            # The results should be a list of data ordered by stock code
             results = re_extract(reg, content)
+
+            # The storing process
             for item in results:
                 if output.get(int(item[1])):
                     output[int(item[1])].append(item[selection])
@@ -139,6 +154,7 @@ if __name__ == '__main__':
         except:
             print('Error: {} is not available!'.format(search_date))
 
+    # To trasfer the dictionary to list for further use
     to_excel = []
     for key, value in output.items():
         temp = []
@@ -146,18 +162,18 @@ if __name__ == '__main__':
         temp.extend(value)
         to_excel.append(temp)
 
+    # To store all the data in a Excel file
     f = xlwt.Workbook(encoding='utf-8', style_compression=0)
     sheet = f.add_sheet('Shareholdings_{}'.format(request_list[sp]))
     for index, cell in enumerate(title):
         sheet.write(0, index, cell)
-
     for i, j in enumerate(to_excel):
         for m, n in enumerate(j):
             sheet.write(i + 1, m, n)
-
     date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
     file_saved = 'ShareholdingEN_{}_{}_at_{}.xls'.format(start, end, date_time)
     file_path = sys.path[0] + '\\' + file_saved
     f.save(file_path)
 
+    # To exit the program
     exiting = input('Completed! Press [Enter] to exit.')
