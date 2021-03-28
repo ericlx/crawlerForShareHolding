@@ -1,7 +1,7 @@
 # Project Name: ShareholdingEN
 # Version: 1.0.2
 # Updated: Eric
-# Date: 20 March, 2021
+# Date: 28 March, 2021
 
 # Standard library from Python
 import re
@@ -123,6 +123,7 @@ title = ['Stock code', 'Stock Name']
 output = {}
 for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
+    
     # To pause the program for three seconds
     sleep(3)
 
