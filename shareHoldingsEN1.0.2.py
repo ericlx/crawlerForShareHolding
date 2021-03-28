@@ -94,28 +94,26 @@ number_of_days = 0
 url = 'https://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
 headers = get_headers()
 
-# To define the regular expression
+# To define the regular expression used to identify the data required
 repl1, repl2, repl3 = ' ' * 40, ' ' * 44, ' ' * 48
-reg = f'''\
-<tr>\
-{repl2}<td class="col-stock-code">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl2}<td class="col-stock-name">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl2}<td class="col-shareholding">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl2}<td class="col-shareholding-percent">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl1}</tr>\
-'''
+reg = '<tr>' + \
+      f'{repl2}<td class="col-stock-code">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl2}<td class="col-stock-name">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl2}<td class="col-shareholding">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl2}<td class="col-shareholding-percent">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl1}</tr>'
 
 # To define the default table title
 request_list = ['Share', 'Percentage']
@@ -174,5 +172,4 @@ file_path = sys.path[0] + '\\' + file_saved
 f.save(file_path)
 
 # To exit the program
-sleep(3)
 exiting = input('Completed! Press [Enter] to exit.')
