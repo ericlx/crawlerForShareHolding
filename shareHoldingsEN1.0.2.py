@@ -1,9 +1,9 @@
 # Project Name: ShareholdingEN
 # Version: 1.0.2
 # Updated: Eric
-# Date: 17 March, 2021
+# Date: 28 March, 2021
 
-# Standard library for Python
+# Standard library from Python
 import re
 import sys
 import datetime
@@ -18,14 +18,14 @@ from lxml import etree
 # To obtain start and ending date from user input
 def obtain_date():
     # Please ensure the format and validity of the date input!
-    startingDate = input('Enter the starting date (YYYYMMDD format): ')
+    startDate = input('Enter the start date (YYYYMMDD format): ')
     endingDate = input('Enter the ending date (YYYYMMDD format): ')
-    return startingDate, endingDate, get_every_day(startingDate, endingDate)
+    return startDate, endingDate, get_every_day(startDate, endingDate)
 
-# To construct a list including every date from start to the end
-def get_every_day(begin_date, end_date):
+# To construct a list including every date from the start to the end
+def get_every_day(start_date, end_date):
     dateList = []
-    beginDate = datetime.datetime.strptime(begin_date, '%Y%m%d')
+    beginDate = datetime.datetime.strptime(start_date, '%Y%m%d')
     endDate = datetime.datetime.strptime(end_date, '%Y%m%d')
     while beginDate <= endDate:
         date_str = beginDate.strftime('%Y%m%d')
@@ -33,9 +33,14 @@ def get_every_day(begin_date, end_date):
         beginDate += datetime.timedelta(days=1)
     return dateList
 
+# To extract data from html by regular expression
+def re_extract(reg, html):
+    file = html.replace('\n', '').replace('\r', '')
+    result = re.findall(reg, file)
+    return result
+
 # To get the formdata required for post requests
 def get_form_data(url, headers, search_date):
-
     response = requests.get(url, headers = headers)
     sel = etree.HTML(response.content)
     VIEW = sel.xpath('//input[@name="__VIEWSTATE"]/@value')
@@ -74,47 +79,65 @@ def get_headers():
     }
     return headers
 
+
+# To obtain user input and define the data required
+# 0 for shares, 1 for percentage
 sp = int(input('Enter 0 for shares, enter 1 for percentage: '))
 selection = 5
-if sp == 1: selection = 7
-request_list = ['Share', 'Percentage']
+if sp == 1:
+    selection = 7
+
+# To obtain user input and define the time period
 start, end, datelist = obtain_date()
 number_of_days = 0
-title = ['Stock code', 'Stock Name']
-output = {}
 
+# To define the Website to visit and obtain headers
 url = 'https://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk'
 headers = get_headers()
 
+# To define the regular expression used to identify the data required
 repl1, repl2, repl3 = ' ' * 40, ' ' * 44, ' ' * 48
-reg = f'''\
-<tr>\
-{repl2}<td class="col-stock-code">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl2}<td class="col-stock-name">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl2}<td class="col-shareholding">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl2}<td class="col-shareholding-percent">\
-{repl3}<div class="mobile-list-heading">(.*?)</div>\
-{repl3}<div class="mobile-list-body">(.*?)</div>\
-{repl2}</td>\
-{repl1}</tr>\
-'''
+reg = '<tr>' + \
+      f'{repl2}<td class="col-stock-code">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl2}<td class="col-stock-name">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl2}<td class="col-shareholding">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl2}<td class="col-shareholding-percent">' + \
+      f'{repl3}<div class="mobile-list-heading">(.*?)</div>' + \
+      f'{repl3}<div class="mobile-list-body">(.*?)</div>' + \
+      f'{repl2}</td>' + \
+      f'{repl1}</tr>'
 
+# To define the default table title
+request_list = ['Share', 'Percentage']
+title = ['Stock code', 'Stock Name']
+
+# To obtain the data by date, and store in a dictionary named output 
+output = {}
 for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
+    
+    # To pause the program for three seconds
+    sleep(3)
+
+    # To skip invalid date
     try:
         title.append(search_date)
-        content = get_content(url, get_form_data(url, headers, search_date))
-        page = content.replace('\n', '').replace('\r', '')
-        results = re.findall(reg, page)
+
+        # The [html] should be a html file from the website
+        html = get_content(url, get_form_data(url, headers, search_date))
+        # The [results] should be a list of data ordered by stock code
+        results = re_extract(reg, html)
+
+        # The storing process
         for item in results:
             if output.get(int(item[1])):
                 output[int(item[1])].append(item[selection])
@@ -128,26 +151,27 @@ for date in datelist:
         number_of_days += 1
     except:
         print('Error: {} is not available!'.format(search_date))
-    sleep(3)
 
-f = xlwt.Workbook(encoding='utf-8', style_compression=0)
-sheet = f.add_sheet('Shareholdings_{}'.format(request_list[sp]))
-
-for index, cell in enumerate(title):
-    sheet.write(0, index, cell)
+# To trasfer the dictionary to list for further use
 to_excel = []
 for key, value in output.items():
     temp = []
     temp.append(key)
     temp.extend(value)
     to_excel.append(temp)
+
+# To store all the data in a Excel file
+f = xlwt.Workbook(encoding='utf-8', style_compression=0)
+sheet = f.add_sheet('Shareholdings_{}'.format(request_list[sp]))
+for index, cell in enumerate(title):
+    sheet.write(0, index, cell)
 for i, j in enumerate(to_excel):
     for m, n in enumerate(j):
         sheet.write(i + 1, m, n)
-
 date_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
 file_saved = 'ShareholdingEN_{}_{}_at_{}.xls'.format(start, end, date_time)
 file_path = sys.path[0] + '\\' + file_saved
 f.save(file_path)
 
+# To exit the program
 exiting = input('Completed! Press [Enter] to exit.')
