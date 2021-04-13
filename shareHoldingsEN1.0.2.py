@@ -1,11 +1,12 @@
 # Project Name: ShareholdingEN
-# Version: 1.0.2
+# Version: 1.0.3
 # Updated: Eric
-# Date: 28 March, 2021
+# Date: 13 April, 2021
 
 # Standard library from Python
 import re
 import sys
+import random
 import datetime
 from time import sleep
 
@@ -126,7 +127,7 @@ for date in datelist:
     search_date = '{}/{}/{}'.format(date[:4], date[4:6], date[6:])
     
     # To pause the program for three seconds
-    sleep(3)
+    sleep(random.uniform(2, 4))
 
     # To skip invalid date
     try:
